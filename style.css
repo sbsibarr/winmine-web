@@ -1,0 +1,332 @@
+/* ============================================================
+   Minesweeper (WINMINE.EXE) - Windows 3.1 recreation
+   Pixel-faithful stylesheet. Native 1x scale, integer metrics.
+   Palette: #C0C0C0 face, #FFFFFF hi, #808080 shadow, #000000,
+   #000080 caption/menu highlight, #008080 desktop (Win3.1 default).
+   ============================================================ */
+
+@font-face {
+  font-family: "Pixelated MS Sans Serif";
+  src: url("assets/fonts/ms_sans_serif.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Pixelated MS Sans Serif";
+  src: url("assets/fonts/ms_sans_serif_bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, sans-serif;
+  font-size: 11px;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  user-select: none;
+  -webkit-user-select: none;
+  overflow: hidden;
+  background: #008080;                /* classic teal desktop */
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: default;
+}
+button:focus, .menuitem:focus { outline: none; }
+
+img { -webkit-user-drag: none; }
+
+#desktop { position: fixed; inset: 0; }
+
+/* ============================== window ==============================
+   Frame: 1px black outer + 2px gray body + 1px black inner (Win 3.1
+   dialog-frame pattern). Client metrics taken from the original
+   layout: panel 37px, 6px gap, 3px field border, 16px cells.        */
+
+.window {
+  position: absolute;
+  background: #C0C0C0;
+  border: 1px solid #000;
+  padding: 2px;
+}
+.wininner {
+  border: 1px solid #000;
+  background: #C0C0C0;
+}
+
+/* title bar ---------------------------------------------------------- */
+.caption {
+  position: relative;
+  height: 16px;
+  background: #000080;
+}
+.captitle {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  line-height: 16px;
+  text-align: center;
+  color: #FFF;
+  pointer-events: none;
+}
+.capbtn {
+  position: absolute;
+  top: 1px;
+  width: 16px; height: 14px;
+  background: #C0C0C0;
+  box-shadow: inset 1px 1px 0 0 #FFF, inset -1px -1px 0 0 #000;
+}
+.capbtn:active { box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #FFF; }
+.ctrlbox { left: 1px; }
+.minbox  { right: 1px; }
+.ctrlglyph {
+  display: block;
+  width: 7px; height: 3px;
+  margin: 4px auto 0 auto;
+  background: #FFF;
+  border: 1px solid #000;
+}
+.minglyph {
+  display: block;
+  width: 0; height: 0;
+  margin: 6px auto 0 auto;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 4px solid #000;
+}
+
+/* menu bar ------------------------------------------------------------ */
+.menubar {
+  height: 16px;
+  background: #FFF;
+  display: flex;
+  align-items: stretch;
+  padding: 0 2px;
+}
+.menuitem {
+  padding: 0 8px;
+  line-height: 14px;
+  color: #000;
+}
+.menuitem u { text-decoration: underline; }
+.menuitem.open, .menuitem:active { background: #000080; color: #FFF; }
+
+/* client -------------------------------------------------------------- */
+.client { background: #C0C0C0; }
+
+/* status panel: 2px sunken bevel, 37px high, flush with client edges */
+.panel {
+  position: relative;
+  height: 37px;
+  box-shadow:
+    inset  1px  1px 0 0 #808080,
+    inset  2px  2px 0 0 #808080,
+    inset -1px -1px 0 0 #FFF,
+    inset -2px -2px 0 0 #FFF;
+}
+
+/* LED counter / timer: 1px sunken frame, digits 13x23 */
+.ledgroup {
+  position: absolute;
+  top: 6px;
+  height: 25px;
+  padding: 1px;
+  background: #C0C0C0;
+  box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #FFF;
+  display: flex;
+}
+#minecounter { left: 7px; }
+#timer { right: 7px; }
+.ledgroup i {
+  display: block;
+  width: 13px; height: 23px;
+  background-image: url("assets/digits.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* smiley button: sprite is 24x24 incl. its raised bevel */
+#face {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  margin-left: -12px;
+  width: 24px; height: 24px;
+  padding: 0;
+  line-height: 0;
+}
+.facegfx {
+  display: block;
+  width: 24px; height: 24px;
+  background-image: url("assets/faces.png");
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  image-rendering: pixelated;
+}
+#face.pressed { box-shadow: inset 2px 2px 0 0 #808080, inset -2px -2px 0 0 #FFF; }
+
+/* minefield: 3px sunken well, 6px below the panel */
+.fieldwrap {
+  margin-top: 6px;
+  padding: 3px;
+  box-shadow:
+    inset  1px  1px 0 0 #808080,
+    inset  2px  2px 0 0 #808080,
+    inset  3px  3px 0 0 #808080,
+    inset -1px -1px 0 0 #FFF,
+    inset -2px -2px 0 0 #FFF,
+    inset -3px -3px 0 0 #FFF;
+}
+#field {
+  display: grid;
+  line-height: 0;
+}
+.cell {
+  width: 16px; height: 16px;
+  background-image: url("assets/tiles.png");
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+/* ============================== menus =============================== */
+.dropdown {
+  position: absolute;
+  display: none;
+  z-index: 100;
+  background: #FFF;
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 0 #FFF, inset -1px -1px 0 0 #808080;
+  padding: 2px;
+  min-width: 130px;
+}
+.dropdown.open { display: block; }
+.mitem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 16px;
+  padding: 0 22px 0 20px;
+  color: #000;
+  white-space: nowrap;
+}
+.mitem.sel { background: #000080; color: #FFF; }
+.mitem.disabled { color: #808080; }
+.mitem.disabled.sel { background: transparent; color: #808080; }
+.accel { margin-left: auto; padding-left: 24px; }
+.msep {
+  height: 0;
+  border-top: 1px solid #808080;
+  border-bottom: 1px solid #FFF;
+  margin: 1px 1px;
+}
+/* classic checkmark, drawn pixel by pixel */
+.check {
+  position: absolute;
+  left: 6px; top: 5px;
+  width: 1px; height: 1px;
+  color: #000;
+  visibility: hidden;
+}
+.check.on { visibility: visible; }
+.check.on::before {
+  content: "";
+  position: absolute;
+  width: 1px; height: 1px;
+  /* base pixel stays transparent - only the 7 box-shadow pixels below form
+     the authentic 7x7 OBM_CHECK checkmark (left arm starts at (0,2)) */
+  background: transparent;
+  box-shadow:
+     6px 0   0 0 currentColor,
+     5px 1px 0 0 currentColor,
+     4px 2px 0 0 currentColor,
+     3px 3px 0 0 currentColor,
+     0px 2px 0 0 currentColor,
+     1px 3px 0 0 currentColor,
+     2px 4px 0 0 currentColor;
+}
+.mitem.sel .check { color: #FFF; }
+
+/* ============================== dialogs ============================= */
+.dialog {
+  position: fixed;
+  display: none;
+  z-index: 200;
+  background: #C0C0C0;
+  border: 1px solid #000;
+  padding: 2px;
+  min-width: 220px;
+}
+.dialog.open { display: block; }
+.dlgcap {
+  position: relative;
+  height: 16px;
+  background: #000080;
+}
+.dlgcap .captitle {
+  display: block;
+  line-height: 16px;
+  text-align: left;
+  text-indent: 22px;
+}
+.dlgclose {
+  top: 1px; left: 1px;
+  position: absolute;
+  width: 16px; height: 14px;
+  background: #C0C0C0;
+  box-shadow: inset 1px 1px 0 0 #FFF, inset -1px -1px 0 0 #000;
+}
+.dlgbody { padding: 10px 12px; }
+#dlg-about { width: 400px; }
+#dlg-best { width: 320px; }
+#dlg-name { width: 300px; }
+#dlg-how { width: 380px; }
+.aboutrow { display: flex; align-items: flex-start; margin-bottom: 8px; }
+.abouticon { margin-right: 12px; image-rendering: pixelated; }
+.bold { font-weight: bold; }
+.hr { height: 0; border-top: 1px solid #808080; border-bottom: 1px solid #FFF; margin: 6px 0; }
+.abouttext p { margin: 0 0 8px 0; line-height: 13px; }
+.abouttext a { color: #0000FF; word-break: break-all; }
+.btnrow { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btnrow .dlgbtn { margin-left: 8px; }
+.dlgbtn {
+  min-width: 70px;
+  height: 21px;
+  background: #C0C0C0;
+  box-shadow: inset 1px 1px 0 0 #FFF, inset -1px -1px 0 0 #000;
+  padding: 0 10px;
+}
+.dlgbtn:active { box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #FFF; }
+.dlgbtn.default { box-shadow: 0 0 0 1px #000, inset 1px 1px 0 0 #FFF, inset -1px -1px 0 0 #000; }
+.dlgbtn.default:active { box-shadow: 0 0 0 1px #000, inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #FFF; }
+.edit {
+  display: block;
+  width: 100%;
+  height: 21px;
+  margin-top: 8px;
+  border: 1px solid #000;
+  box-shadow: inset 1px 1px 0 0 #808080, inset -1px -1px 0 0 #FFF;
+  background: #FFF;
+  font: inherit;
+  padding: 2px 4px;
+}
+.edit:focus { outline: none; }
+.besttable td { padding: 2px 8px 2px 0; line-height: 13px; }
+.besttable td.t { padding-right: 24px; }
+
+/* XYZZY easter egg: 1px probe at the top-left of the screen */
+#xyzzy {
+  position: fixed;
+  left: 0; top: 0;
+  width: 1px; height: 1px;
+  z-index: 9999;
+  pointer-events: none;
+}

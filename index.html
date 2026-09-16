@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Minesweeper</title>
+<link rel="icon" type="image/png" href="assets/icon16.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="desktop">
+  <div class="window" id="win">
+    <div class="wininner">
+      <div class="caption" id="caption">
+        <button class="capbtn ctrlbox" id="ctrlbox" aria-label="Control menu"><span class="ctrlglyph"></span></button>
+        <span class="captitle">Minesweeper</span>
+        <button class="capbtn minbox" id="minbox" aria-label="Minimize"><span class="minglyph"></span></button>
+      </div>
+
+      <div class="menubar" id="menubar">
+        <span class="menuitem" data-menu="gamemenu" tabindex="0"><u>G</u>ame</span>
+        <span class="menuitem" data-menu="helpmenu" tabindex="0"><u>H</u>elp</span>
+      </div>
+
+      <div class="client" id="client">
+        <div class="panel">
+          <div class="ledgroup" id="minecounter" aria-label="Mines left"><i></i><i></i><i></i></div>
+          <button id="face" aria-label="New game"><span class="facegfx" id="facegfx"></span></button>
+          <div class="ledgroup" id="timer" aria-label="Timer"><i></i><i></i><i></i></div>
+        </div>
+        <div class="fieldwrap"><div id="field"></div></div>
+      </div>
+    </div>
+
+    <!-- ============ dropdown menus ============ -->
+    <div class="dropdown" id="gamemenu">
+      <div class="mitem" data-cmd="new"><span class="mlabel">New</span><span class="accel">F2</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="beginner"><span class="check" data-check="level:beginner"></span><span class="mlabel">Beginner</span></div>
+      <div class="mitem" data-cmd="intermediate"><span class="check" data-check="level:intermediate"></span><span class="mlabel">Intermediate</span></div>
+      <div class="mitem" data-cmd="expert"><span class="check" data-check="level:expert"></span><span class="mlabel">Expert</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="marks"><span class="check" data-check="flag:marks"></span><span class="mlabel">Marks</span></div>
+      <div class="mitem" data-cmd="sound"><span class="check" data-check="flag:sound"></span><span class="mlabel">Sound</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="best"><span class="mlabel">Best Times...</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="exit"><span class="mlabel">Exit</span></div>
+    </div>
+
+    <div class="dropdown" id="helpmenu">
+      <div class="mitem" data-cmd="how"><span class="mlabel">How to Play</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="about"><span class="mlabel">About Minesweeper...</span></div>
+    </div>
+
+    <div class="dropdown" id="ctrlmenu">
+      <div class="mitem disabled"><span class="mlabel">Restore</span></div>
+      <div class="mitem disabled"><span class="mlabel">Move</span></div>
+      <div class="mitem disabled"><span class="mlabel">Size</span></div>
+      <div class="mitem" data-cmd="minimize"><span class="mlabel">Minimize</span></div>
+      <div class="msep"></div>
+      <div class="mitem" data-cmd="close"><span class="mlabel">Close</span><span class="accel">Alt+F4</span></div>
+    </div>
+
+    <!-- ============ dialogs ============ -->
+    <div class="dialog" id="dlg-about">
+      <div class="dlgcap"><button class="capbtn dlgclose" data-close="dlg-about" aria-label="Close"><span class="ctrlglyph"></span></button><span class="captitle">About Minesweeper</span></div>
+      <div class="dlgbody">
+        <div class="aboutrow">
+          <img class="abouticon" src="assets/icon32.png" alt="Minesweeper icon" width="32" height="32">
+          <div>
+            <div class="bold">Minesweeper</div>
+            <div>Version 3.1 (Web Recreation)</div>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="abouttext">
+          <p>A fan-made browser recreation of the classic Microsoft Minesweeper
+          (WINMINE.EXE) from the Windows 3.1 era, intended to preserve the
+          original look, feel, and behavior.</p>
+          <p>Sprite assets sourced from The Spriters Resource:<br>
+          <a href="https://www.spriters-resource.com/pc_computer/minesweeper/asset/19849/" target="_blank" rel="noopener">https://www.spriters-resource.com/pc_computer/minesweeper/asset/19849/</a></p>
+          <p>General Minesweeper sprite sheet uploaded by Black Squirrel.
+          Contributors: DaSpriter121 and emi3.<br>
+          Credits shown on the original sprite sheet include: Black Squirrel,
+          TCRF, Inky, PCMacLinux100, DaSpriter121.</p>
+          <p>This web recreation is an independent fan-made implementation and
+          is not affiliated with or endorsed by Microsoft.</p>
+        </div>
+        <div class="btnrow"><button class="dlgbtn default" data-close="dlg-about">OK</button></div>
+      </div>
+    </div>
+
+    <div class="dialog" id="dlg-best">
+      <div class="dlgcap"><button class="capbtn dlgclose" data-close="dlg-best" aria-label="Close"><span class="ctrlglyph"></span></button><span class="captitle">Fastest Mine Sweeper Times</span></div>
+      <div class="dlgbody">
+        <table class="besttable">
+          <tr><td>Beginner:</td><td class="t" id="best-beginner-t">999 Seconds</td><td id="best-beginner-n">Anonymous</td></tr>
+          <tr><td>Intermediate:</td><td class="t" id="best-intermediate-t">999 Seconds</td><td id="best-intermediate-n">Anonymous</td></tr>
+          <tr><td>Expert:</td><td class="t" id="best-expert-t">999 Seconds</td><td id="best-expert-n">Anonymous</td></tr>
+        </table>
+        <div class="btnrow">
+          <button class="dlgbtn" id="btn-reset-scores">Reset Scores</button>
+          <button class="dlgbtn default" data-close="dlg-best">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog" id="dlg-name">
+      <div class="dlgcap"><button class="capbtn dlgclose" data-close="dlg-name" aria-label="Close"><span class="ctrlglyph"></span></button><span class="captitle">Congratulations</span></div>
+      <div class="dlgbody">
+        <div class="abouttext">You have the fastest time<br>for <span id="name-level">beginner</span> level.<br>Please type your name.</div>
+        <input class="edit" id="nameedit" type="text" maxlength="24" autocomplete="off">
+        <div class="btnrow"><button class="dlgbtn default" id="btn-name-ok">OK</button></div>
+      </div>
+    </div>
+
+    <div class="dialog" id="dlg-how">
+      <div class="dlgcap"><button class="capbtn dlgclose" data-close="dlg-how" aria-label="Close"><span class="ctrlglyph"></span></button><span class="captitle">How to Play</span></div>
+      <div class="dlgbody">
+        <div class="abouttext">
+          <p>The object of Minesweeper is to find all the mines without
+          uncovering any of them.</p>
+          <p>Left-click a covered square to uncover it. The number on a square
+          tells how many mines touch it.</p>
+          <p>Right-click a square to plant a flag if you believe it holds a
+          mine. With Marks turned on, right-click again to change it to a
+          question mark, and once more to clear it.</p>
+          <p>If a number has exactly that many flags around it, press both
+          mouse buttons (or the middle button) on the number to uncover the
+          remaining squares around it.</p>
+          <p>The timer starts on your first left click. The game is won when
+          every square without a mine has been uncovered. F2 starts a new
+          game.</p>
+        </div>
+        <div class="btnrow"><button class="dlgbtn default" data-close="dlg-how">OK</button></div>
+      </div>
+    </div>
+
+  </div>
+  <div id="xyzzy"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

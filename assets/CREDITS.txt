@@ -1,0 +1,43 @@
+Minesweeper (WINMINE.EXE) - Windows 3.1 web recreation
+=======================================================
+
+ASSET PROVENANCE
+----------------
+All game sprites in this folder were extracted pixel-exactly (no
+resampling, no recoloring, no smoothing) from the public Minesweeper
+sprite sheet hosted on The Spriters Resource:
+
+  https://www.spriters-resource.com/pc_computer/minesweeper/asset/19849/
+
+Only the section labeled "Winmine 31/NT4 and 2000+" was used for the
+gameplay graphics (tiles, LED digits, smiley faces). The application
+icons are the WinME (silver sparkle mine) icons from the sheet's icon
+column. Sprites from Winmine 2.0/2.8/2.9, 95/98/ME gameplay, FINAL
+monochrome and Prato fiorito were deliberately NOT used.
+
+Sheet credits (as printed on the sheet):
+  - Black Squirrel  - first sprite rip (sheet still used for
+                      31/NT4/2000+ and Winmine monochrome)
+  - TCRF            - Prato fiorito colored and Winmine 2.0 to 95/98/ME
+  - Inky            - sheet reorganization, Prato fiorito wrong-flagged
+                      and monochrome, monochrome sprite fixes and
+                      minus&empty for score displays
+  - PCMacLinux100   - Prato fiorito for Win2000
+  - DaSpriter121    - first Prato fiorito rips and icon rips
+
+This web recreation is an independent fan-made implementation and is
+not affiliated with or endorsed by Microsoft.
+
+FILES
+-----
+tiles.png   256x16 - 16 tiles of 16x16, in this order:
+                     0 flat/pressed, 1 covered, 2-9 numbers 1-8,
+                     10 flag, 11 question, 12 pressed-?,
+                     13 mine, 14 mine-red (detonated), 15 mine-X (wrong flag)
+digits.png  156x23 - 12 LED cells of 13x23: 0 1 2 3 4 5 6 7 8 9 - empty
+faces.png   120x24 - 5 faces of 24x24: smile, wink, ooh, cool, dead
+icon32.png         - WinME application icon, 32x32 (About dialog)
+icon16.png         - WinME application icon, 16x16 (favicon)
+fonts/             - "Pixelated MS Sans Serif" bitmap-style webfont
+                     (period-appropriate UI font substitute; extracted
+                     bitmap font redistributed with the 98.css project)
