@@ -34,7 +34,7 @@ var DIGIT_IDX = { '0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'-
 var level = 'beginner', cols = 9, rows = 9, mines = 10;
 var board = [], cells = [];
 var started = false, over = false, flags = 0, revealedCount = 0, time = 0, timerId = null;
-var marks = true, sound = true;
+var marks = true;
 var cheat = false, cheatBuf = '';
 var best = {
   beginner:     { time: 999, name: 'Anonymous' },
@@ -48,7 +48,7 @@ var openMenuId = null, openDialogId = null;
 function saveSettings() {
   try {
     localStorage.setItem('winmine31', JSON.stringify({
-      level: level, marks: marks, sound: sound, best: best
+      level: level, marks: marks, best: best
     }));
   } catch (e) { /* storage unavailable - play without persistence */ }
 }
@@ -59,7 +59,6 @@ function loadSettings() {
     var s = JSON.parse(raw);
     if (s.level && LEVELS[s.level]) level = s.level;
     if (typeof s.marks === 'boolean') marks = s.marks;
-    if (typeof s.sound === 'boolean') sound = s.sound;
     if (s.best) for (var k in best) {
       if (s.best[k] && typeof s.best[k].time === 'number') best[k] = s.best[k];
     }
@@ -195,8 +194,8 @@ function toggleFlag(i) {
   if (over) return;
   var c = board[i];
   if (c.st === ST_REVEALED) return;
-  if (c.st === ST_COVERED)      { c.st = ST_FLAG; flags++; playBlip(true); }
-  else if (c.st === ST_FLAG)    { c.st = marks ? ST_Q : ST_COVERED; flags--; playBlip(false); }
+  if (c.st === ST_COVERED)      { c.st = ST_FLAG; flags++; }
+  else if (c.st === ST_FLAG)    { c.st = marks ? ST_Q : ST_COVERED; flags--; }
   else                          { c.st = ST_COVERED; }
   renderCell(i);
   renderCounter();
@@ -232,7 +231,6 @@ function lose(hit) {
     }
   }
   renderAll();
-  playBoom();
 }
 
 function checkWin() {
@@ -247,7 +245,6 @@ function checkWin() {
   flags = mines;
   renderAll();
   renderCounter();
-  playTada();
   if (time < best[level].time) { pendingBestTime = time; openNameDialog(); }
 }
 var pendingBestTime = null;
@@ -444,7 +441,7 @@ function updateChecks() {
     var spec = checks[i].getAttribute('data-check').split(':');
     var on = false;
     if (spec[0] === 'level') on = (spec[1] === level);
-    else if (spec[0] === 'flag') on = (spec[1] === 'marks' ? marks : sound);
+    else if (spec[0] === 'flag') on = (spec[1] === 'marks' ? marks : false);
     checks[i].classList.toggle('on', on);
   }
 }
@@ -479,7 +476,6 @@ function execCmd(cmd) {
     case 'beginner': case 'intermediate': case 'expert':
       newGame(cmd); break;
     case 'marks': marks = !marks; updateChecks(); saveSettings(); break;
-    case 'sound': sound = !sound; updateChecks(); saveSettings(); break;
     case 'best': openDialog('dlg-best'); break;
     case 'how': openDialog('dlg-how'); break;
     case 'about': openDialog('dlg-about'); break;
@@ -583,44 +579,6 @@ $('ctrlbox').addEventListener('mousedown', function (e) {
 $('minbox').addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
 $('minbox').addEventListener('click', function () { hideWindow(); });
 
-/* ------------------------------ sound ---------------------------------- */
-var actx = null;
-function audio() {
-  if (!sound) return null;
-  try {
-    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === 'suspended') actx.resume();
-    return actx;
-  } catch (e) { return null; }
-}
-function tone(freq, dur, when, vol, type) {
-  var a = audio(); if (!a) return;
-  var o = a.createOscillator(), g = a.createGain();
-  o.type = type || 'square';
-  o.frequency.value = freq;
-  g.gain.value = vol || 0.08;
-  o.connect(g); g.connect(a.destination);
-  var t = a.currentTime + (when || 0);
-  o.start(t);
-  g.gain.setValueAtTime(g.gain.value, t);
-  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  o.stop(t + dur + 0.02);
-}
-function playBlip(on)  { if (sound) tone(on ? 1400 : 900, 0.04, 0, 0.05); }
-function playTada()    { if (!sound) return; tone(523, 0.12, 0); tone(659, 0.12, 0.12); tone(784, 0.12, 0.24); tone(1047, 0.25, 0.36); }
-function playBoom()    {
-  if (!sound) return;
-  var a = audio(); if (!a) return;
-  var o = a.createOscillator(), g = a.createGain();
-  o.type = 'sawtooth';
-  o.frequency.setValueAtTime(300, a.currentTime);
-  o.frequency.exponentialRampToValueAtTime(40, a.currentTime + 0.5);
-  g.gain.setValueAtTime(0.15, a.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.55);
-  o.connect(g); g.connect(a.destination);
-  o.start(); o.stop(a.currentTime + 0.6);
-}
-
 /* ------------------------------ boot ----------------------------------- */
 loadSettings();
 newGame(level);
@@ -650,7 +608,7 @@ window.WM = {
   state: function () {
     return { level: level, cols: cols, rows: rows, mines: mines, flags: flags,
              revealed: revealedCount, time: time, over: over, started: started,
-             marks: marks, sound: sound,
+             marks: marks,
              counterText: mines - flags, cellCount: board.length };
   },
   minesList: function () {
